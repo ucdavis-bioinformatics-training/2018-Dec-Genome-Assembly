@@ -12,7 +12,7 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 * [Sequencing Technologies - Ruta Sahasrabudhe, Diana Burkart-Waco, Oanh Nguyen](seqtech.md)
 * [10X Assembly - Matt Settles](10X.md)
 * [Oxford Nanopore Assembly - Jie Li](ONT.md)
-* [Pacific Biosciences Assembly - Joe Fass](PB.md)
+* [Pacific Biosciences Assembly - Joe Fass](pacbio/PB.md)
 * [More Assembly Integration - Jie Li, Joe Fass](integration.md)
 
 Evaluation
