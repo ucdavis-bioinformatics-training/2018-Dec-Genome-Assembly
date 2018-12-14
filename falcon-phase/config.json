@@ -1,0 +1,30 @@
+{
+        "env"		: "/home/zevk/fp_tut.sh",
+	"CPU"		: "2",
+	"nucmer"	: "/software/mummer/4.0.0beta2/lssc0-linux/bin/nucmer",
+	"delta-filter"	: "/software/mummer/4.0.0beta2/lssc0-linux/bin/delta-filter",
+	"show-coords"	: "/software/mummer/4.0.0beta2/lssc0-linux/bin/show-coords",
+	"samtools"	: "/software/samtools/1.5/lssc0-linux/bin/samtools",
+	"hp"		: "/home/zevk/tools/FALCON-Phase/bin/coords2hp.py",
+	"hpfilt"	: "/home/zevk/tools/FALCON-Phase/bin/filt_hp.py",
+	"falcon_phase"	: "/home/zevk/tools/FALCON-Phase/bin/falcon-phase",
+	"falcon_oi"	: "/home/zevk/tools/FALCON-Phase/bin/primary_contig_index.pl",
+	"bedtools"	: "/software/bedtools2/2.27.0/lssc0-linux/bin/bedtools",
+	"emit"		: "/home/zevk/tools/FALCON-Phase/bin/emit_haplotigs.pl",
+	"bwa"		: {
+		"path"	: "/software/bwa/0.7.16a/lssc0-linux/bwa",
+		"cpu"	: "2"
+	},
+	"sample": {
+		"name"			: "test_data",
+		"output_format"		: "pseudohap",
+		"min_aln_len"		: "5000",
+		"p_to_h"		: "name_mapping.txt",
+		"p_ctgs"		: "/home/zevk/tools/FALCON-Phase/test_data/cns_p_ctg.clean.fasta",
+		"h_ctgs"		: "/home/zevk/tools/FALCON-Phase/test_data/cns_h_ctg.clean.fasta",
+		"r1"			: "/home/zevk/tools/FALCON-Phase/test_data/S3HiC_R1.fastq",
+		"r2"			: "/home/zevk/tools/FALCON-Phase/test_data/S3HiC_R2.fastq",
+		"enzyme"		: "GATC",
+		"iter"			: "1000000"
+	}
+}
