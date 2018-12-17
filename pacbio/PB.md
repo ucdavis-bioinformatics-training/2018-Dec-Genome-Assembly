@@ -1,11 +1,8 @@
 Assembly With PacBio Data
 ==========================
 
-
-# Joe - after Sequel data, what are scraps, etc., after assembly (QA, assembly, polishing, assessment), integration of two technologies? Run nanopore and pacbio together (CANU, miniasm,) and more than one technology, PB scaffolds plus ONT reads, and vice versa
-
-
-
+Joe Fass  
+jnfass@ucdavis.edu  
 
 Raw Data
 --------------------------------
