@@ -4,7 +4,8 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 
 ## UC Davis Genome Center [*Bioinformatics Core*](http://bioinformatics.ucdavis.edu/)
 
-* [Genome Assembly Overview - Matt Settles](biofx-overview.md)
+* [Introduction - Matt Settles](slides/introduction.pdf)
+* [Genome Assembly Overview - Matt Settles](cluster-slurm/cluster.md)
 * [Sequencing Overview - Lutz Froenicke](dnatech-overview.md)
 * [Getting Connected](logging-in.md)
 * [KAT and Data QA/QC - Gonzalo Garcia](garcia.md)
@@ -19,5 +20,3 @@ Evaluation
 ----------
 
 [Evaluation]()
-
-
