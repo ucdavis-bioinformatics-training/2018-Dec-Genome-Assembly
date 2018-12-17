@@ -1,33 +1,33 @@
 Running jobs on the cluster and using modules
 ===============================================
 
-**1\.** Here at the UC Davis Bioinformatics Core we have a large computational cluster (named cabernet) that we use for our analyses. The job scheduling system we use on this cluster is called [Slurm](https://slurm.schedmd.com/). In this section, we will go through examples of the commands we will be using to interact with the cluster. First, what is a cluster?
+**1\.** Here at the UC Davis Bioinformatics Core we have a large computational cluster (named LSSC0) that we use for our analyses. The job scheduling system we use on this cluster is called [Slurm](https://slurm.schedmd.com/). In this section, we will go through examples of the commands we will be using to interact with the cluster. First, what is a cluster?
 
 ![cluster diagram](cluster_diagram.png)
 
-The basic architecture of a compute cluster consists of a "head node", which is the computer from which a user submits jobs to run, and "compute nodes", which are a large number of computers on which the jobs can be run. It is also possible to log into a compute node and run jobs directly from there. **Never run a job directly on the head node!**
+The basic architecture of a compute cluster consists of a "head node", which is the computer from which a user submits jobs to run, and "compute nodes", which are a large number of computers on which the jobs can be run. It is also possible to log into a compute node and run jobs directly from there. **Never run a job directly on the head node! Unless your told its ok**
 
 ---
 
-**2\.** Now, let's look at the commands. First, log into the head node (cabernet.genomecenter.ucdavis.edu). The two main commands we will be using are srun and sbatch. 'srun' is used to run a single command on a compute node or to log into a compute node directly. Take a look at the options to srun:
+**2\.** Now, let's look at the commands. First, log into the head node (tadpole.genomecenter.ucdavis.edu). The two main commands we will be using are srun and sbatch. 'srun' is used to run a job on the cluster interactively. Take a look at the options to srun:
 
     srun --help
 
 The way we have set up our cluster requires that you specify a time limit and maximum memory size for your job. If your job exceeds these limits, then it will be terminated. So try running the following to log into a node:
 
-    srun -t 1440 -c 4 -n 1 --mem 8000 --reservation workshop --pty /bin/bash
+    srun -t 2:00 -c 1 -n 1 --mem 1000 --reservation workshop --pty /bin/bash
 
-This command is requesting a compute node with a time limit of 1440 minutes (i.e. 24 hours), one processor, a max memory of 8000Mb (i.e. 8Gb), using a compute reservation for this workshop (an option you would not normally use), and then finally, specifying a shell to run in a terminal ("--pty" option). Run this command to get to a compute node when you want to run jobs on the command-line directly.
+This command is requesting a compute node with a time limit of 2:00 hours , one processor, a max memory of 1000Mb (i.e. 1Gb), using a compute reservation for this workshop (an option you would not normally use), and then finally, specifying a shell to run in a terminal ("--pty" option). Run this command to get to a compute node when you want to run jobs on the command-line directly.
 
 ---
 
-**3\.** 'sbatch' is used to submit jobs to run on the cluster. Typically it is used to run many jobs at once. Look at the options for sbatch:
+**3\.** 'sbatch' is used to submit jobs to run on the cluster, non-iteractively. Typically it is used to run many jobs at once. Look at the options for sbatch:
 
     sbatch --help
 
 Generally, we do not use any options for sbatch... we typically give it a script (i.e. a text file with commands inside) to run. Let's take a look at a template script:
 
-    wget https://ucdavis-bioinformatics-training.github.io/2018-September-Bioinformatics-Prerequisites/wednesday/slurm.sh
+    wget https://ucdavis-bioinformatics-training.github.io/2018-Dec-Genome-Assembly/cluster-slurm/slurm.sh
     cat slurm.sh
 
 The first line tells sbatch what scripting language the rest of the file is in. Any line that begins with a "#" symbol is ignored, except lines that begin with "#SBATCH". Those lines are for specifying sbatch options without having to type them on the command-line every time. In this script, on the next set of lines, we've put some code for calculating the time elapsed for the job. Then, we set up the variables for the rest of the script. In this case, "$1" refers to the first argument to the script. So, for example, when you would run this script, you would run it using a sample name like so (**don't actually run this command yet!**):
@@ -40,7 +40,7 @@ So the script takes "I892_S88" and puts it into the variable "$1". We then copy 
 
 Now, after the variable section, we load the modules that we will be using for this job. Finally, we run the actual commands using the variable names we created earlier. "${sample}" gets replaced with the actual sample name when it runs. And then at the end we calculate and print out the elapsed time.
 
-The stderr and stdout streams for each job get captured to files that use the job ID in the filename and typically end in ".err" and ".out". These files will be created in the directory that the script is run, unless otherwise specified.
+The stderr and stdout streams for each job get captured to files specified in #SBATCH commands. These files will be created in the directory that the script is run, unless otherwise specified.
 
 ---
 
@@ -66,11 +66,11 @@ You can get more information about each command by typing "<command> --help" or 
 This is a list of all the software (with different versions) that you can access. Now try running the 'scythe' software:
 
     scythe
-    
-You should get an error saying that the command was not found. Take a look at your PATH variable. 
+
+You should get an error saying that the command was not found. Take a look at your PATH variable.
 
     echo $PATH
-    
+
 These are the directories (colon separated) that are searched for anything you run on the command-line. In order to access a piece of software that is not in one of these default directories, we need to use the 'module load' command:
 
     module load scythe
@@ -118,8 +118,8 @@ Finally, 'module list' will list all of your currently loaded modules in this te
 
 **8\.** There are many different ways to run jobs on the cluster and on the command-line... we are going to talk about two of the ways. Download these two scripts:
 
-    wget https://ucdavis-bioinformatics-training.github.io/2018-September-Bioinformatics-Prerequisites/wednesday/qa_task_array.sh
-    wget https://ucdavis-bioinformatics-training.github.io/2018-September-Bioinformatics-Prerequisites/wednesday/qa_for_loop.sh
+    wget https://ucdavis-bioinformatics-training.github.io/2018-Dec-Genome-Assembly/cluster-slurm/qa_task_array.sh
+    wget https://ucdavis-bioinformatics-training.github.io/2018-Dec-Genome-Assembly/cluster-slurm/qa_for_loop.sh
 
 Let's take a look at the two scripts we downloaded. The first is a script that uses Slurm task arrays to run all of the sickle and scythe steps per sample. The second is a script that uses a 'for loop' to loop through all of the samples and run the steps serially. This second script can be used when you are running all of your jobs on one machine. Look at the first script:
 
@@ -138,4 +138,3 @@ will return the 5th line of the samples.txt file. We put the command in backtick
     cat qa_for_loop.sh
 
 This script has similar commands, but instead of using a task array, it is using a for loop. So this will loop through all the IDs in samples.txt and assign a new ID on every iteration of the loop. You should use this script if you will be running jobs NOT on a cluster, but on a single machine.
-
