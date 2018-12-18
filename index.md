@@ -4,7 +4,7 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 
 ## UC Davis Genome Center [*Bioinformatics Core*](http://bioinformatics.ucdavis.edu/)
 
-* [Introduction - Matt Settles](slides/introduction.pdf)
+* [Introduction - Matt Settles](slides/Introduction.pdf)
 * [Cluster intro - Matt Settles](cluster-slurm/cluster.md)
 * [Genome Assembly Overview - Matt Settles](slides/assembly_talk.pdf)
 * [Sequencing Overview - Lutz Froenicke](dnatech-overview.md)
