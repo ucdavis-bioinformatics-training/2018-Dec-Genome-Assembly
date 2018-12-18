@@ -10,6 +10,7 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 * [Cluster intro - Matt Settles](cluster-slurm/cluster.md)
 
 * [Genome Assembly Overview - Matt Settles](slides/assembly_talk.pdf)
+* [Davis Genome Center - Lutz Froenicke](slides/GA_workshop_2018_DNA_Tech_Core.pdf)
 
 * [KAT and Data QA/QC - Gonzalo Garcia]()
 
