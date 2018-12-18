@@ -9,7 +9,7 @@ Raw Data
 
 To start out, we'll make a directory for this part of the workshop:
 
-    cd /share/biocore/workshop/{your username}/
+    cd /share/workshop/{your username}/
     mkdir PB
     cd PB/
     mkdir 00-RawData
@@ -24,6 +24,7 @@ Then, so we don't have multiple copies of the raw data sitting around, make symb
 
 This is a Sequel dataset, a MinION dataset, and an Illumina dataset from *Michael, et al. 2018 Nature Communications*, all from *Arabidopsis thaliana* KBS-Mac-74. We're going to look at MinION later with Jessie. Right now we've got the filtered subread data from a Sequel run. But let's actually look at an example of a Sequel dataset linked from PacBio's DevNet wiki [https://github.com/PacificBiosciences/DevNet/wiki/Datasets](https://github.com/PacificBiosciences/DevNet/wiki/Datasets). I've downloaded two SMRT-Cells of *Arabidopsis* data. Let's take a look at the sequence data (stored in BAM files) and relate it to the sequencing process.
 
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/pacbcloud/1_A01_customer/*.bam .
     module load samtools/1.9
     samtools view m54113_160913_184949.subreads.bam | cut -f1-9 | head
 
@@ -58,12 +59,18 @@ Dumping all subreads can be done by grabbing the correct columns:
 
 
 
-
 Some Basic Stats
 -------------------
 
 Let's make some Cumulative Length Plots (see Fig10-11, Assemblathon 2 [paper](https://academic.oup.com/gigascience/article/2/1/2047-217X-2-10/2656129#120193432)) of the raw read data. First, list lengths of reads longest to shortest. Then add a cumulative length column next to the length column. In the following code block, the first Perl chunk reads four lines at a time, then prints out only the length of the second line (the sequence line in FASTQ format). The second Perl chunk updates a cumulative length ($c) and print out the two columns (length and cumulative length) one row at a time.
 
+    # first link to the fastq files from the Michael paper above
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/sequel.fq.gz .
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/minion.fq.gz .
+    # set up a new directory if you wish
+    cd /share/workshop/{your username}/
+    mkdir 01-ReadStats
+    cd 01-ReadStats/
     # generate cumulative length data for the PacBio data (2-3 minutes run time):
     zcat ../00-RawData/sequel.fq.gz \
     | perl -ne '$h=$_; $s=<>; $h2=<>; $q=<>; chomp $s; print length($s)."\n"' \
@@ -123,30 +130,38 @@ Given what we saw above, this wouldn't be useful for the PacBio Sequel data.
 Running the Assemblers
 --------------------------
 
-CANU runs all steps in one command ... see the SLURM scripts that you can copy from my example directory.
+Set up an assembly directory, and grab the SLURM template scripts from the GitHub repository:
 
-    cd /share/biocore/{your username}/PB/
-    cp /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/02-Assemblies/canu*slurm .
+    cd /share/workshop/{your username}/PB/
+    mkdir 02-Assemblies
+    cd 02-Assemblies/
+    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/canu.minion.template.slurm
+    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/canu.sequel.template.slurm
+    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/minimap.minion.template.slurm
+    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/minimap.sequel.template.slurm
+    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/miniasm.minion.template.slurm
+    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/miniasm.sequel.template.slurm
 
-For miniasm, one needs to align the reads all-versus-all, so there are separate minimap and miniasm SLURM scripts.
-
-    cp /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/02-Assemblies/mini*slurm .
+For CANU, the command in the SLURM script runs all parts of the assembly process. Just edit the scripts for your own use, and submit them. For miniasm, one needs to align the reads all-versus-all, so there are separate minimap and miniasm SLURM scripts.
 
 Submit the CANU scripts, then the minimap scripts. Then you can schedule each miniasm script to run depending on each one's minimap script running successfully. First use 'squeue' to find the JOBID of the appropriate minimap job (let's say it's 42 for this example, for the sequel data). Then submit the dependent job like this:
 
     sbatch -d afterok:42 miniasm.sequel.slurm
 
-Please make sure to change the notification email in each SLURM script to YOUR OWN EMAIL! Otherwise you'll drown my inbox, unless I have enough forethought to change the email in my scripts to ... Matt's.
+This way, the miniasm job will automatically start once the specified minimap job completes without error.
 
-Output
--------------
+NOTE: In this workshop, you'll only need to specify your email address if you want emails from SLURM. You might want to specify job names to make sense to you, but since you'll really only be checking your own jobs in the queue ('squeue -u yourUsername'), there won't be much confusion with others. To work on your own cluster, you'll likely need to change the --account, --reservation, and --partition options.
 
-For the miniasm assmeblies (in GFA format) we just need to grab the "S" lines:
+Are your jobs queued? Instead of waiting for your assembly jobs to finish, feel free to cancel them and we'll link in my assemblies instead.
+
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/02-Assemblies/*.fa .
+
+For the miniasm assemblies, the miniasm command produces only GFA files. So I had to run the following in my own directory to produce the miniasm fasta files.
 
     cat sequel.gfa | grep ^S | perl -ane 'print ">$F[1]\n$F[2]\n"' > sequel.miniasm.fa
     cat minion.gfa | grep ^S | perl -ane 'print ">$F[1]\n$F[2]\n"' > minion.miniasm.fa
 
-For the CANU assemblies, 
+For the CANU assemblies, I ran the following, since I've found the QuickMerge step (below) to be really sensitive to format.
 
     cat CANU-sequel/CANU-sequel.unitigs.fasta \
       | cut -f1 -d\  \
@@ -161,16 +176,18 @@ For the CANU assemblies,
       | grep -v ^$ \
       > minion.canu.fa
 
+So, you've linked the fasta files from my 02-Assemblies directory. Each miniasm produced a GFA file (.gfa), from which I pulled sequences. Each CANU produced a unitigs file, which I cleaned up a little. You could easily add these parsing / cleanup steps to your SLURM scripts, if you like. For homework.
+
 
 Assembly Stats
 ---------------
 
-Use the same commands as for the read stats, but we'll need to modify slightly to accommodate fasta, as opposed to fastq.
+To look at length alone, use the same commands as for the read stats, but we'll need to modify slightly to accommodate fasta, as opposed to fastq.
 
     cd /share/biocore/{your username}/PB/
     mkdir 03-AssemblyStats
     cd 03-AssemblyStats/
-    zcat ../02-Assemblies/sequel.miniasm.fa \
+    cat ../02-Assemblies/sequel.miniasm.fa \
     | perl -ne '$h=$_; $s=<>; chomp $s; print length($s)."\n"' \
     | sort -rn \
     | perl -ne '$l=$_; chomp $l; $c+=$l; print "$l\t$c\n"' \
@@ -186,7 +203,7 @@ Use the same commands as for the read stats, but we'll need to modify slightly t
 Polishing
 ------------
 
-Using RACON to polish. 
+Grab  
 
     
 
