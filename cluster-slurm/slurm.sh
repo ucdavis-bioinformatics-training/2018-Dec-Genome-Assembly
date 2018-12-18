@@ -5,6 +5,8 @@
 #SBATCH --ntasks=1 # Number of cores
 #SBATCH --mem=1000 # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH --time=0-02:00 # 0 days, 2 hours
+#SBATCH --partition=production
+#SBATCH --account=workshop
 #SBATCH --reservation=workshop # Partition to submit to
 #SBATCH --output=example-%N-%j.out # File to which STDOUT will be written, with Node and Job ID
 #SBATCH --error=example-%N-%j.err # File to which STDERR will be written, with Node and Job ID

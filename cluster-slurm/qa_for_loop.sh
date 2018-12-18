@@ -1,9 +1,17 @@
 #!/bin/bash
-
+#
+#SBATCH --job-name=example # Job name
 #SBATCH --nodes=1
-#SBATCH --time=600
-#SBATCH --mem=2000 # Memory pool for all cores (see also --mem-per-cpu)
-#SBATCH --reservation=workshop
+#SBATCH --ntasks=1 # Number of cores
+#SBATCH --mem=1000 # Memory pool for all cores (see also --mem-per-cpu)
+#SBATCH --time=0-02:00 # 0 days, 2 hours
+#SBATCH --partition=production
+#SBATCH --account=workshop
+#SBATCH --reservation=workshop # Partition to submit to
+#SBATCH --output=example-%N-%j.out # File to which STDOUT will be written, with Node and Job ID
+#SBATCH --error=example-%N-%j.err # File to which STDERR will be written, with Node and Job ID
+#SBATCH --mail-type=ALL # Type of email notification- BEGIN,END,FAIL,ALL
+#SBATCH --mail-user=myemail@ucdavis.edu # Email to which notifications will be sent
 
 
 begin=`date +%s`
@@ -27,4 +35,3 @@ done
 end=`date +%s`
 elapsed=`expr $end - $begin`
 echo Time taken: $elapsed
-
