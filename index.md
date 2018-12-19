@@ -12,10 +12,10 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 * [Genome Assembly Overview - Matt Settles](slides/assembly_talk.pdf)
 * [Davis Genome Center - Lutz Froenicke](slides/GA_workshop_2018_DNA_Tech_Core.pdf)
 
-* [KAT and Data QA/QC - Gonzalo Garcia](https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/blob/master/kmer_assembly_qc/Kmer_workshop.pdf) 
+* [KAT and Data QA/QC - Gonzalo Garcia](https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/blob/master/kmer_assembly_qc/Kmer_workshop.pdf)
 * [Kat example commands](https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/blob/master/kmer_assembly_qc/hands_on_guide.md)
 
-* [Pacific Biosciences Assembly - Joe Fass](PB.md)
+* [Pacific Biosciences Assembly - Joe Fass](pacbio/PB.md)
 
 * [Oxford Nanopore Assembly - Jie Li](nanopore.md)
 
