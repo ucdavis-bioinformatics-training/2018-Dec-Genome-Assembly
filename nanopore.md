@@ -20,7 +20,7 @@ Then, let's get the raw data. We are going to create a soft link to the data in 
     cd 02-QCData
     cp /share/workshop/jli/02-QCData/run_nanoplot.sh .
 
-This script will submit a job to run nanopolish on the lambda we have. The command to submit this script is as following. Please replace "nnp.jli" with the name for your own job.
+This script will submit a job to run nanopolish on the lambda we have. The command to submit this script is as following. Please replace "nnp.jli" with the name for your own job. The same applies to all the rest of the documentation, whenever we submit a job, please replace "jli" to your own user name.
 
     sbatch -J nnp.jli run_nanoplot.sh lambda ../00-RawData/lambda
 
