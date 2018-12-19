@@ -16,13 +16,15 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 
 * [Pacific Biosciences Assembly - Joe Fass](PB.md)
 
+* [Oxford Nanopore Assembly - Jie Li](nanopore.md)
+
+
 
 ### TBD
 * [Sequencing Overview - Lutz Froenicke]()
 * [Falcon Phase & HiC Integration - Zev Kronenberg]()
 * [Sequencing Technologies - Ruta Sahasrabudhe, Diana Burkart-Waco, Oanh Nguyen]()
 * [10X Assembly - Matt Settles]()
-* [Oxford Nanopore Assembly - Jie Li]()
 * [More Assembly Integration - Jie Li, Joe Fass]()
 
 Evaluation
