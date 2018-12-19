@@ -19,8 +19,6 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 
 * [Oxford Nanopore Assembly - Jie Li](nanopore.md)
 
-
-
 * [Genome Scaffolding with HiC -Zev Kronenberg](genome-scaffolding-with-hic/2018_Davis_intro_to_scaffolding.pdf)
 * [Juicebox - Zev Kronenberg](juicebox-tut/juicebox-tut-2018.pdf)
 * [Falcon Phase - Zev Kronenberg](falcon-phase/FALCON-Phase-talk-2018.pdf)
