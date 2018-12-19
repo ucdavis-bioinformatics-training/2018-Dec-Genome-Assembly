@@ -98,4 +98,8 @@ In order to run the following command, please change the last argument "jli" to 
 
 When the job finishes, we should have a file named "lambda.draft.png" in the working directory. We can download it to our laptop for viewing. This script aligns the draft assembly from miniasm to the draft assembly from canu. The assembly from canu is on the x axis. You can modify the script to generate the alignment of the polished assembly to the draft assembly from miniasm. The one I generated is ![here](lambda.polish.canu.png).
 
+We can also generate similar plot between the assemblies and the reference genome. Please get a copy of the reference genome using the following command. Then you should be able to use the above script (with modification) to accomplish the goal.
+
+    ln -s /share/biocore/projects/Internal_Jessie_UCD/Nanopore/References/lambda_ref.fasta .
+
 
