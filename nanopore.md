@@ -55,7 +55,7 @@ In order to run the following command, please change the last argument "jli" to 
     sbatch -J canu.jli run_canu.sh jli
 
 
-Because of the all to all overlap step, canu runs much slower than other packages that do not include the error correction step.
+Because of the error correction step, canu runs much slower than other packages that do not include the error correction step.
 
 ---
 
