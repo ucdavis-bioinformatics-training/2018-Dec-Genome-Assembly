@@ -20,10 +20,10 @@ To start out, we'll make a directory for this part of the workshop:
 
 Then, so we don't have multiple copies of the raw data sitting around, make symbolic links:
 
-    ln -s /share/biocore/jfass/....................... sequel.fq.gz
-    ln -s /share/biocore/jfass/....................... minion.fq.gz
-    ln -s /share/biocore/jfass/....................... miseq_R1.fq.gz
-    ln -s /share/biocore/jfass/....................... miseq_R2.fq.gz
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/sequel.fq.gz sequel.fq.gz 
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/minion.fq.gz minion.fq.gz
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/miseq_R1.fq.gz miseq_R1.fq.gz
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/miseq_R2.fq.gz miseq_R2.fq.gz
 
 This is a Sequel dataset, a MinION dataset, and an Illumina dataset from *Michael, et al. 2018 Nature Communications*, all from *Arabidopsis thaliana* KBS-Mac-74. We're going to look at MinION later with Jessie. Right now we've got the filtered subread data from a Sequel run. But let's actually look at an example of a Sequel dataset linked from PacBio's DevNet wiki [https://github.com/PacificBiosciences/DevNet/wiki/Datasets](https://github.com/PacificBiosciences/DevNet/wiki/Datasets). I've downloaded two SMRT-Cells of *Arabidopsis* data. Let's take a look at the sequence data (stored in BAM files) and relate it to the sequencing process.
 
