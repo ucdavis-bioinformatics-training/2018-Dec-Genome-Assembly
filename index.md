@@ -14,9 +14,12 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 
 * [KAT and Data QA/QC - Gonzalo Garcia]()
 
+* [Genome Scaffolding with HiC -Zev Kronenberg](genome-scaffolding-with-hic/2018_Davis_intro_to_scaffolding.pdf)
+* [Juicebox - Zev Kronenberg](juicebox-tut/juicebox-tut-2018.pdf)
+* [Falcon Phase - Zev Kronenberg](falcon-phase/FALCON-Phase-talk-2018.pdf)
+
+
 ### TBD
-* [Sequencing Overview - Lutz Froenicke]()
-* [Falcon Phase & HiC Integration - Zev Kronenberg]()
 * [Sequencing Technologies - Ruta Sahasrabudhe, Diana Burkart-Waco, Oanh Nguyen]()
 * [10X Assembly - Matt Settles]()
 * [Oxford Nanopore Assembly - Jie Li]()
