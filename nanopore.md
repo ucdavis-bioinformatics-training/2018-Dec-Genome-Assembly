@@ -15,7 +15,7 @@ Then, let's get the raw data. We are going to create a soft link to the data in 
 
 ---
 
-**2\.** First step in an assembly, it's best to look at the raw data and know what quality of data one has in hand. The information one gets from looking at the raw data will help to make decision on the parameters in downstream analysis, or whether more data/better data should be generated. Fortunately, there is a very nice tool that one can use - NanoPlot [link to github](https://github.com/wdecoster/NanoPlot). NanoPlot can take fastq files as input, or the sequencing_summary.txt file.
+**2\.** First step in an assembly, it's best to look at the raw data and know what quality of data one has in hand. The information one gets from looking at the raw data will help to make decision on the parameters in downstream analysis, or whether more data/better data should be generated. Fortunately, there is a very nice tool that one can use - NanoPlot ([link to github](https://github.com/wdecoster/NanoPlot)). NanoPlot can take fastq files as input, or the sequencing_summary.txt file.
 
     cd 02-QCData
     cp /share/workshop/jli/02-QCData/run_nanoplot.sh .
