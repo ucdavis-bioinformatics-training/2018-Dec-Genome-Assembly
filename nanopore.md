@@ -96,6 +96,6 @@ In order to run the following command, please change the last argument "jli" to 
     sbatch -J nuc.jli run_mummer.sh jli
 
 
-When the job finishes, we should have a file named "lambda.draft.png" in the working directory. We can download it to our laptop for viewing. This script aligns the draft assembly from miniasm to the draft assembly from canu. The assembly from canu is on the x axis. You can modify the script to generate the alignment of the polished assembly to the draft assembly from miniasm. I have also generated an alignment between the polished assembly from miniasm and the canu assembly (![here](lambda.polish.canu.png))
+When the job finishes, we should have a file named "lambda.draft.png" in the working directory. We can download it to our laptop for viewing. This script aligns the draft assembly from miniasm to the draft assembly from canu. The assembly from canu is on the x axis. You can modify the script to generate the alignment of the polished assembly to the draft assembly from miniasm. The one I generated is ![here](lambda.polish.canu.png).
 
 
