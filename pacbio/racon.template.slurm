@@ -9,8 +9,8 @@
 #SBATCH --partition=production  # Partition to submit to
 #SBATCH --reservation=workshop  # for workshop
 #SBATCH --account=workshop  # for workshop
-#SBATCH --output=run_miniasm-%A-%a.out  # File to which STDOUT will be written
-#SBATCH --error=run_miniasm-%A-%a.err  # File to which STDERR will be written
+#SBATCH --output=run_racon-%A-%a.out  # File to which STDOUT will be written
+#SBATCH --error=run_racon-%A-%a.err  # File to which STDERR will be written
 #SBATCH --mail-type=END  # Type of email notification- BEGIN,END,FAIL,ALL
 #SBATCH --mail-user=replaceMe@geemail.com  # Email to which notifications will be sent
 
@@ -21,7 +21,7 @@ THREADS=${SLURM_NTASKS}
 MEM=$(expr ${SLURM_MEM_PER_NODE} / 1024)
 
 # specify assembly, reads, then filename prefix after slurm script name, e.g.:
-# sbatch racon.slurm sampleA.fa sampleA.rq sampleA
+# sbatch racon.slurm sampleA.fa sampleA.fq sampleA
 asm=$1
 reads=$2
 prefix=$3

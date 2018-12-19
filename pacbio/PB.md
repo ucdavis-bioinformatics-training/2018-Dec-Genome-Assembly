@@ -1,8 +1,11 @@
-Assembly With PacBio Data
-==========================
+Assembly With PacBio Data (and a little MinION data too)
+=========================================================
 
 Joe Fass  
 jnfass@ucdavis.edu  
+
+Slides [here](PacBioAssembly.pdf).
+
 
 Raw Data
 --------------------------------
@@ -135,12 +138,12 @@ Set up an assembly directory, and grab the SLURM template scripts from the GitHu
     cd /share/workshop/{your username}/PB/
     mkdir 02-Assemblies
     cd 02-Assemblies/
-    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/canu.minion.template.slurm
-    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/canu.sequel.template.slurm
-    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/minimap.minion.template.slurm
-    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/minimap.sequel.template.slurm
-    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/miniasm.minion.template.slurm
-    wget https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/tree/master/pacbio/miniasm.sequel.template.slurm
+    wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/master/pacbio/canu.minion.template.slurm
+    wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/master/pacbio/canu.sequel.template.slurm
+    wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/master/pacbio/minimap.minion.template.slurm
+    wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/master/pacbio/minimap.sequel.template.slurm
+    wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/master/pacbio/miniasm.minion.template.slurm
+    wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/master/pacbio/miniasm.sequel.template.slurm
 
 For CANU, the command in the SLURM script runs all parts of the assembly process. Just edit the scripts for your own use, and submit them. For miniasm, one needs to align the reads all-versus-all, so there are separate minimap and miniasm SLURM scripts.
 
@@ -203,22 +206,80 @@ To look at length alone, use the same commands as for the read stats, but we'll 
 Polishing
 ------------
 
-Grab  
+Grab the Racon SLURM script from the repo, like this:
 
-    
+    cd /share/biocore/{your username}/PB/
+    mkdir 04-Polish
+    cd 04-Polish/
+    wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/master/pacbio/racon.template.slurm
+
+Edit the racon script for your use, then submit both the miniasm assemblies for polishing. I unzipped copies of the reads into the current directory, since Racon would (probably) not take the gzipped reads:
+
+    gunzip -c ../00-RawData/minion.fq.gz > minion.fq
+    gunzip -c ../00-RawData/sequel.fq.gz > sequel.fq
+    sbatch racon.slurm ../02-Assemblies/minion.miniasm.fa minion.fq minion.miniasm
+    sbatch racon.slurm ../02-Assemblies/sequel.miniasm.fa sequel.fq sequel.miniasm
+
+Feel free to link to my fastq files. And feel free to cancel your jobs and link to my corrected assemblies as well (??????.miniasm.round2.fa).
+
 
 Integration
 ------------
 
-Installation of QuickMerge (oy). 
+Installation of QuickMerge (oy). Let's walk through this one together.
 
+    cd /share/biocore/{your username}/PB/
+    mkdir 05-Integrate
+    cd 05-Integrate/
+    wget https://github.com/mahulchak/quickmerge/archive/v0.2.tar.gz
+    tar xzvf v0.2.tar.gz
 
+Once QuickMerge has been installed, link in the two CANU assemblies, which we've modified above to have no whitespace in the header lines, and no newline characters in the sequences:
+
+    ln -s ../02-Assemblies/minion.canu.fa .
+    ln -s ../02-Assemblies/sequel.canu.fa .
+
+For the miniasm assemblies, which we've now corrected, their headers now have some whitespace added in by Racon, so let's modify them:
+
+    cat ../04-Polish/minion.miniasm.round2.fa | cut -f1 -d\  > minion.miniasm.racon.fa
+    cat ../04-Polish/sequel.miniasm.round2.fa | cut -f1 -d\  > sequel.miniasm.racon.fa
+
+Make a directory to run QuickMerge in, and go (assuming your PATH is correct from the QuickMerge installation above):
+
+    mkdir minion.canu.QM.sequel.canu
+    cd minion.canu.QM.sequel.canu/
+    ../quickmerge-0.2/merge_wrapper.py ../minion.canu.fa ../sequel.canu.fa
+
+This is still giving inconsistent errors as of latest testing, though.
 
 Reference Comparison
 ---------------------
 
-Align each using Contig Reorder tool. Then align all at once. All wrt At (Col?).
+Reorder assembled contigs with respect to GenBank Col assembly using [Mauve's](http://darlinglab.org/mauve/user-guide/reordering.html) Contig Reorder tool. Then align each reordered assembly, and the Col assembly, to each other using progressiveMauve.
 
+    wget http://darlinglab.org/mauve/snapshots/2015/2015-02-13/linux-x64/mauve_linux_snapshot_2015-02-13.tar.gz
+    tar xzvf mauve_linux_snapshot_2015-02-13.tar.gz
+    # prepend mauve binary location to path, so your own equivalent of this:
+    # export PATH=/share/biocore/jfass/2018-December-Genome-Assembly-Workshop/06-Compare/mauve_snapshot_2015-02-13/linux-x64:$PATH
+
+    module load java/jdk1.8
+    java -Xmx12g -cp /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/06-Compare/mauve_snapshot_2015-02-13/Mauve.jar \
+        org.gel.mauve.contigs.ContigOrderer \
+        -output /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/06-Compare/Col.vs.minionCANU \
+        -ref /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/At.NCBI.fa \
+        -draft /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/02-Assemblies/minion.canu.fa
+    # and in a separate shell
+    java -Xmx12g -cp /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/06-Compare/mauve_snapshot_2015-02-13/Mauve.jar \
+        org.gel.mauve.contigs.ContigOrderer \
+        -output /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/06-Compare/Col.vs.sequelCANU \
+        -ref /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/At.NCBI.fa \
+        -draft /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/02-Assemblies/sequel.canu.fa
+    # after both of the above finish, take the reordered fasta file from the hightest numbered alignment directory,
+    # to align all three (Col, reordered minion CANU assembly, and reorderd sequel CANU assembly) together:
+    progressiveMauve --output=ColVSminionCanuVSsequelCanu.xmfa \
+        ../00-RawData/At.NCBI.fa \
+        Col.vs.minionCANU/alignment9/minion.canu.fa.fas \
+        Col.vs.sequelCANU/alignment9/sequel.canu.fa.fas
 
 
 
