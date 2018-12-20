@@ -20,10 +20,10 @@ To start out, we'll make a directory for this part of the workshop:
 
 Then, so we don't have multiple copies of the raw data sitting around, make symbolic links:
 
-    ln -s /share/biocore/jfass/....................... sequel.fq.gz
-    ln -s /share/biocore/jfass/....................... minion.fq.gz
-    ln -s /share/biocore/jfass/....................... miseq_R1.fq.gz
-    ln -s /share/biocore/jfass/....................... miseq_R2.fq.gz
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/sequel.fq.gz
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/minion.fq.gz
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/miseq_R1.fq.gz
+    ln -s /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/00-RawData/miseq_R2.fq.gz
 
 This is a Sequel dataset, a MinION dataset, and an Illumina dataset from *Michael, et al. 2018 Nature Communications*, all from *Arabidopsis thaliana* KBS-Mac-74. We're going to look at MinION later with Jessie. Right now we've got the filtered subread data from a Sequel run. But let's actually look at an example of a Sequel dataset linked from PacBio's DevNet wiki [https://github.com/PacificBiosciences/DevNet/wiki/Datasets](https://github.com/PacificBiosciences/DevNet/wiki/Datasets). I've downloaded two SMRT-Cells of *Arabidopsis* data. Let's take a look at the sequence data (stored in BAM files) and relate it to the sequencing process.
 
@@ -145,10 +145,19 @@ Set up an assembly directory, and grab the SLURM template scripts from the GitHu
     wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/master/pacbio/miniasm.minion.template.slurm
     wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/master/pacbio/miniasm.sequel.template.slurm
 
-For CANU, the command in the SLURM script runs all parts of the assembly process. Just edit the scripts for your own use, and submit them. For miniasm, one needs to align the reads all-versus-all, so there are separate minimap and miniasm SLURM scripts.
+For CANU, the command in the SLURM script runs all parts of the assembly process. Just edit the scripts for your own use, and submit them. For miniasm, one needs to align the reads all-versus-all, so there are separate minimap and miniasm SLURM scripts. Submit the CANU scripts, then the minimap scripts.
 
-Submit the CANU scripts, then the minimap scripts. Then you can schedule each miniasm script to run depending on each one's minimap script running successfully. First use 'squeue' to find the JOBID of the appropriate minimap job (let's say it's 42 for this example, for the sequel data). Then submit the dependent job like this:
+    # if you've copied the template scripts and edited and renamed them without "template":
+    sbatch canu.minion.slurm
+    sbatch canu.sequel.slurm
+    sbatch minimap.minion.slurm
+    sbatch minimap.sequel.slurm
 
+Then you can schedule each miniasm script to run depending on each one's minimap script running successfully. First use 'squeue' to find the JOBID of the appropriate minimap job (let's say it's 42 for this example, for the sequel data). Then submit the dependent job like this:
+
+    squeue -u {your username}
+    # JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+    #    42 productio   minmap    {you}  R   19:42:05      1 fleet-23
     sbatch -d afterok:42 miniasm.sequel.slurm
 
 This way, the miniasm job will automatically start once the specified minimap job completes without error.
