@@ -10,7 +10,7 @@ First, we are going to get into your own directory and create sub-directories fo
     mkdir Nanopore
     cd Nanopore
 
-    mkdir 00-RawData 02-QCData 02-Cleaned 03-Canu-Lambda 03-Miniasm-Lambda 04-Nanopolish-Lambda
+    mkdir 00-RawData 02-QCData 02-Cleaned 03-Canu-Lambda 03-Miniasm-Lambda 04-Nanopolish-Lambda 04-Mummer-Lambda
 
 Then, let's get the raw data. We are going to create a soft link to the data in my directory. This way, we can save both disk space and time.
 
