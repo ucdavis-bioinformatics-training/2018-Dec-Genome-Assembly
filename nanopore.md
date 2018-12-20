@@ -92,11 +92,11 @@ This step includes several processes: mapping of the sequencing reads to the dra
 **8\.** Now that we have two draft assemblies and one polished assembly, we can align one to another to see the difference between assembly packages, or the effect of the polishing process.
 
     cd ../04-Mummer-Lambda
-    cp /share/workshop/jli/Nanopore/04-Mummer-Lambda/run_mummer.sh .
+    cp /share/workshop/jli/Nanopore/04-Mummer-Lambda/run_nucmer.sh .
 
 In order to run the following command, please change the last argument "jli" to your user name, which will tell the script to run everything in your directory.
 
-    sbatch -J nuc.jli run_mummer.sh jli
+    sbatch -J nuc.jli run_nucmer.sh jli
 
 
 When the job finishes, we should have a file named "lambda.draft.png" in the working directory. We can download it to our laptop for viewing. This script aligns the draft assembly from miniasm to the draft assembly from canu. The assembly from canu is on the x axis. You can modify the script to generate the alignment of the polished assembly to the draft assembly from miniasm. The one I generated is ![here](lambda.polish.canu.png).
