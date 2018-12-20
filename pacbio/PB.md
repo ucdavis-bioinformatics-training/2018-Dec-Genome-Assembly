@@ -242,8 +242,27 @@ Installation of QuickMerge (oy). Let's walk through this one together.
     cd 05-Integrate/
     wget https://github.com/mahulchak/quickmerge/archive/v0.2.tar.gz
     tar xzvf v0.2.tar.gz
+    cd quickmerge-0.2/
+    cd merger/
+    make
+    mergerpath=`pwd`
+    cd ../MUMmer3.23/
+    make clean  # important!! and not in instructions
+    make CPPFLAGS="-O3 -DSIXTYFOURBITS"  # important!! for large-ish genomes
+    make install
+    mummerpath=`pwd`
+    cd ../
+    # substitute more general way of locating python in use
+    echo '#!/usr/bin/env python' > temp
+    tail -n +2 merge_wrapper.py >> temp
+    mv merge_wrapper.py merge_wrapper.py.ORIGINAL
+    mv temp merge_wrapper.py
 
-Once QuickMerge has been installed, link in the two CANU assemblies, which we've modified above to have no whitespace in the header lines, and no newline characters in the sequences:
+Now, whenever you want to run QuickMerge, you just need to prepend the two paths to your PATH variable:
+
+    export PATH=$mergerpath:$mummerpath:$PATH
+
+Once QuickMerge has been installed, link in the two CANU assemblies, which we've modified above to have no whitespace in the header lines, and no newline characters in the sequences (this should be handled by QuickMerge, but it doesn't hurt to be paranoid):
 
     ln -s ../02-Assemblies/minion.canu.fa .
     ln -s ../02-Assemblies/sequel.canu.fa .
@@ -258,8 +277,18 @@ Make a directory to run QuickMerge in, and go (assuming your PATH is correct fro
     mkdir minion.canu.QM.sequel.canu
     cd minion.canu.QM.sequel.canu/
     ../quickmerge-0.2/merge_wrapper.py ../minion.canu.fa ../sequel.canu.fa
+    # repeat for other combinations?
 
-This is still giving inconsistent errors as of latest testing, though.
+It appears that QuickMerge fails intermittently, *on the same data*. So the solution for now would be to re-run Quickmerge if it fails giving you this error:
+
+    ERROR: mummer and/or mgaps returned non-zero
+    ERROR: Could not parse delta file, out.delta
+    error no: 400
+
+... *assuming* you've already compiled QuickMerge using 'make CPPFLAGS="-O3 -DSIXTYFOURBITS"'.
+
+You may want to use Mauve (next section) to compare the genomes you feed to QuickMerge to the merged fasta file it produces.
+
 
 Reference Comparison
 ---------------------
@@ -285,11 +314,13 @@ Reorder assembled contigs with respect to GenBank Col assembly using [Mauve's](h
         -draft /share/biocore/jfass/2018-December-Genome-Assembly-Workshop/02-Assemblies/sequel.canu.fa
     # after both of the above finish, take the reordered fasta file from the hightest numbered alignment directory,
     # to align all three (Col, reordered minion CANU assembly, and reorderd sequel CANU assembly) together:
-    progressiveMauve --output=ColVSminionCanuVSsequelCanu.xmfa \
+    progressiveMauve --output=ColVSminionCanuVSsequelCanu \
         ../00-RawData/At.NCBI.fa \
         Col.vs.minionCANU/alignment9/minion.canu.fa.fas \
         Col.vs.sequelCANU/alignment9/sequel.canu.fa.fas
 
+Once the progressiveMauve alignment has finished, you'll need to pull down the ".xmfa", ".bbcols", and ".backbone" files it generates. Also, if you want to view down to the sequence level, you'll need to pull down the whole directory structure that contains the original sequence files, since (if I recall correctly) the ".xmfa" file contains relative paths to the original sequence files. Alternatively, you could replace those paths in the file, so the sequence files can be stored in a place of your choosing, independent of where they were when you ran progressiveMauve. Or you could make a habit of always copying sequence files to the directory you'll run progressiveMauve in, so you can package them all up together.
 
+To view the final alignment, open up Mauve on your local machine ('java -Xmx5g -jar Mauve.jar' to give Mauve a maximum of 5 GB of RAM) and use File --> Open --> {select the .xmfa file}. See the Darling lab Mauve [pages](http://darlinglab.org/mauve/user-guide/introduction.html) to learn your bearings in Mauve.
 
 
