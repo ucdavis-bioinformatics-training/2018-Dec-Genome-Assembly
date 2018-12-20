@@ -15,18 +15,22 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 * [KAT and Data QA/QC - Gonzalo Garcia](https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/blob/master/kmer_assembly_qc/Kmer_workshop.pdf)
 * [Kat example commands](https://github.com/ucdavis-bioinformatics-training/2018-Dec-Genome-Assembly/blob/master/kmer_assembly_qc/hands_on_guide.md)
 
-* [Pacific Biosciences Assembly - Joe Fass](pacbio/PB.md)
-
-* [Oxford Nanopore Assembly - Jie Li](nanopore.md)
-
 * [Genome Scaffolding with HiC -Zev Kronenberg](genome-scaffolding-with-hic/2018_Davis_intro_to_scaffolding.pdf)
 * [Juicebox - Zev Kronenberg](juicebox-tut/juicebox-tut-2018.pdf)
 * [Falcon Phase - Zev Kronenberg](falcon-phase/FALCON-Phase-talk-2018.pdf)
 
+* [Sequencing Technologies - Ruta Sahasrabudhe](slides/GA_workshop_2018_RutaSlides.pdf)
+* [Sequencing Technologies - Diana Burkart-Waco](slides/Genome_Assembly_Workshop_12-19-2018_DB.pdf)
+
+* [Pacific Biosciences Assembly - Joe Fass](pacbio/PB.md)
+
+* [Oxford Nanopore Assembly - Jie Li](nanopore.md)
+
+* [10X Assembly - Matt Settles](10x-supernova/10x-supernova.md)
+
 
 ### TBD
-* [Sequencing Technologies - Ruta Sahasrabudhe, Diana Burkart-Waco, Oanh Nguyen]()
-* [10X Assembly - Matt Settles]()
+
 * [More Assembly Integration - Jie Li, Joe Fass]()
 
 Evaluation

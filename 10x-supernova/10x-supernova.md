@@ -13,7 +13,7 @@
 
 ## 10X assembly with supernova
 
-[https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/welcome](10X Genomics Supernova main page)
+[10X Genomics Supernova main page][https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/welcome)
 
 Supernova's [__"achieving success"__](https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/welcome)
 
@@ -201,10 +201,22 @@ Data location - /share/workshop/msettles/aspidoscelis_assembly
 1. Create folder in your workshop directory
 1. Link raw data into your directory
   * /share/workshop/msettles/aspidoscelis_assembly/2018_Sept_10X
-1. Link slurm scripts to your directory
+1. Copy all the slurm scripts to your directory
 1. Create a slurm_out directory
 1. Clone the proc10xG repo
   * git clone https://github.com/ucdavis-bioinformatics/proc10xG.git
+
+Final directory should look like
+
+    -- /share/workshop/[username]/assembly10x
+      -- /2018_Sept_10X  # A linked
+      -- /kat.slurm # copied
+      -- /map_barcodes.slurm # copied
+      -- /mkbwaref.slurm # copied
+      -- /mkoutput_supernova.slurm
+      -- /proc10xG.slurm
+      -- /run_supernova.slurm
+      -- /slurm_out
 
 With small modification to the script, everything now should be set up for you to run all the scripts and create a 10x Assembly using Supernova.
 
