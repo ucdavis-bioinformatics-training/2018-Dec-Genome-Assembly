@@ -54,7 +54,7 @@ Dumping all subreads can be done by grabbing the correct columns:
           id=`echo $line | cut -f1 -d\ `
           seq=`echo $line | cut -f2 -d\ `
           qual=`echo $line | cut -f3 -d\ `
-          echo -e ">$id"
+          echo -e "@$id"
           echo "$seq"
           echo "+"
           echo "$qual"
