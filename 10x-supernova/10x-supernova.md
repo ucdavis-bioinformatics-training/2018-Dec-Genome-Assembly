@@ -13,7 +13,7 @@
 
 ## 10X assembly with supernova
 
-[10X Genomics Supernova main page][https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/welcome)
+[10X Genomics Supernova main page](https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/welcome)
 
 Supernova's [__"achieving success"__](https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/welcome)
 
