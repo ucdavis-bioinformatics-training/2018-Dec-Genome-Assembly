@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#SBATCH --array=1-4
+#SBATCH --array=0-2
 #SBATCH --job-name=kat # Job name
 #SBATCH --nodes=1
 #SBATCH --time=10-9
@@ -24,7 +24,7 @@ THREADS=${SLURM_NTASKS}
 MEM=$(expr ${SLURM_MEM_PER_NODE} / 1024)
 
 THREADS=8
-kmer=(16 21 27 33)
+kmer=(21 27 33)
 echo "Processing kmer: ${kmer[SLURM_ARRAY_TASK_ID]}"
 
 module load anaconda2
@@ -56,4 +56,3 @@ runtime=$((end-start))
 echo $runtime
 
 exit
-
