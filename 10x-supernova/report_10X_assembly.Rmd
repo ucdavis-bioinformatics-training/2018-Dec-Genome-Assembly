@@ -1,0 +1,105 @@
+---
+title: "Genomics Assembly (10X) Anteater"
+output:
+  html_notebook:
+#   code_folding="hide"
+  html_document:
+#   code_folding="hide"
+---
+
+High Molecular Weight DNA Samples was submitted to the UC Davis Genome Center in 2018 for [10x Genomics](https://www.10xgenomics.com/) Linked Reads sequencing. The UC Davis Genome Center's DNA Technologies Core (UCSF CAT service, Illumina Novaseq) and Bioinformatics Core sequenced and assembled the genome.
+
+Assembly was produced by setting the maximum number of raw input reads to 2B.
+
+
+```{r include=FALSE}
+library(ShortRead)
+library(Biostrings)
+library(ggplot2)
+library(kableExtra)
+library(knitr)
+```
+
+## 10x Genomics Linked Reads Sequencing, Assembled with SuperNova (v2.1.0)
+
+```{r echo=FALSE}
+#### 10X assembly
+#system("fold -w 1000 black_tail_deer.pseudohap.fasta > black_tail_deer.pseudohap.folded.fasta", intern=TRUE)
+#system("cut -d' ' -f1 black_tail_deer.pseudohap.fasta > black_tail_deer.pseudohap.reform.fasta", intern=TRUE)
+assembly10x <- readDNAStringSet("Anteater_10X.pseudohap.reform.fasta")
+
+# reorder largest to smallest
+assembly10x <- assembly10x[order(-width(assembly10x))]
+width.assembly <- as.numeric(width(assembly10x))
+
+a10X_number_of_contigs <- length(assembly10x)
+a10X_genome_size <- sum(width.assembly)
+
+af <- alphabetFrequency(assembly10x)[,c("A","C","G","T","N")]
+a10X_percentN <- sum(af[,'N'])/sum(as.numeric(af))*100
+a10X_gcbycontig <- rowSums(af[,c("G","C")])/rowSums(af[,c("A","C","G","T")])
+a10X_gccontent <- sum(rowSums(af[,c("G","C")]))/sum(rowSums(af[,c("A","C","G","T")]))
+cs <- cumsum(width.assembly)
+d2p <- data.frame(Contigs=width.assembly, Cumu.lens=cs, stringsAsFactors=F)
+```
+
+The 10X Supernova assembly resulted in `r formatC(a10X_number_of_contigs,format="d", big.mark=",")` scaffolds for a total final genome size of `r formatC(a10X_genome_size, format="f", digits=0, big.mark=",")`bp. The assembly contained `r round(a10X_percentN,2)`% (`r formatC(sum(af[,'N']), format="d", big.mark=",")`bp) uncharacterized 'N' basepair. The GC content of the assembly was `r round(a10X_gccontent*100,2)`%.
+
+###N50, L50 scaffold values
+The N50 length is defined as the shortest sequence length at 50% of the genome. It can be thought of as the point of half of the mass of the distribution; the number of bases from the N50 scaffold and all scaffolds longer than the N50 will be close to the number of bases from all scaffolds shorter than the N50. The summary of the assembly NXX defined similarly is as below.
+
+
+
+```{r echo=FALSE}
+Nlens <- width.assembly[which(!duplicated(trunc((cs/sum(width.assembly)*10))))]
+Nperc <- signif((cs/sum(width.assembly))[which(!duplicated(trunc((cs/sum(width.assembly)*10))))]*100,1)
+Nind <- which(!duplicated(trunc((cs/sum(width.assembly)*10))))
+
+Nlens <- Nlens[which(Nperc %in% seq(10,90,by=10))]
+Nind <- Nind[which(Nperc %in% seq(10,90,by=10))]
+Nperc <- Nperc[which(Nperc %in% seq(10,90,by=10))]
+a10X_Ndata <- data.frame(NXX=Nperc, LXX=Nind, Length=Nlens)
+
+a10X_Ndata2 <- a10X_Ndata
+a10X_Ndata2$Length <-  paste(formatC(a10X_Ndata2$Length, format='d', big.mark=','),"bp")
+a10X_Ndata2$NXX <- paste0("N",a10X_Ndata2$NXX)
+tb <- kable(a10X_Ndata2, align='c', "html")
+kable_styling(tb, bootstrap_options=c("hover", "condensed", "responsive"), full_width=T)
+
+```
+
+In summary, 50% of the genome assembly sequence can be found in `r a10X_Ndata2[which(a10X_Ndata2$NXX == 'N50'),"LXX"]` scaffolds, with an N50 scaffold length of `r a10X_Ndata2[which(a10X_Ndata2$NXX == 'N50'),"Length"]` and 90% of the genome assembly sequence can be found in `r a10X_Ndata2[which(a10X_Ndata2$NXX == 'N90'),"LXX"]` scaffolds, with an N90 scaffold length of `r a10X_Ndata2[which(a10X_Ndata2$NXX == 'N90'),"Length"]`. Another way to look at the contributions of different length of scaffolds to the total genome size, the following plot provides a graphical representation.
+
+```{r results='asis', echo=FALSE, out.extra=''}
+cat("<table class='container'><tr>")
+cat("<td>")
+ggplot(d2p, aes(x=Contigs, y=Cumu.lens)) + geom_point(color="red") +
+	scale_x_log10() + scale_y_log10() +
+	labs(x="Scaffold length", y="Cumulative size", title="10X Assembly") + theme_bw() +
+	theme(legend.position='none')
+cat("</td>")
+cat("</tr></table>")
+```
+
+
+```{r echo=FALSE}
+library(knitr)
+colFmt = function(x,color){
+  outputFormat = opts_knit$get("rmarkdown.pandoc.to")
+  if(outputFormat == 'latex')
+    paste("\\textcolor{",color,"}{",x,"}",sep="")
+  else if(outputFormat == 'html')
+    paste("<font color='",color,"'>",x,"</font>",sep="")
+  else
+    x
+}
+```
+
+The report given by supernova assembler is as following.
+
+
+
+
+```{r engine='bash', comment='', echo=FALSE}
+cat Anteater_10X/outs/report.txt
+```

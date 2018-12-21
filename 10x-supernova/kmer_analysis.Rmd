@@ -1,0 +1,145 @@
+---
+title: "Dovetail Assembly kmer spectra (Anteater)"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+10x Genomics Data, ~2B reads Illumina Novaseq 2x150 
+
+```{r options, include=FALSE, echo=FALSE, error=FALSE, warning=FALSE}
+library(ggplot2)
+library(reshape2)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(plotly)
+options(knitr.table.format = "html")
+options(digits=10)
+```
+
+## Processing reads with proc10xG, in preperation for kmer analysis
+
+proc10xG is a series of python scripts to process data generated using the 10x genomics DNA system. Scripts are designed to extract and trim the reads of gem barocode informaton and primer sequence respectively. Compare the gem barcodes to a whitelist (allowing for 1 mismatch) and annotating the read as having a barcode which MATCHES a barcode int the whitelist, contains MISMATCH1, is AMBIGUOUS (with 1 edit distance, matches multiple whitelisted barcodes), or UNKONWN does not match any whitelisted barcodes at edit distance 1.
+
+proc10xG processing results:
+```{r engine='bash', comment='', echo=FALSE}
+tail -5 Anteater_reads/Anteater.proc10xG
+```
+
+```{r echo=FALSE}
+dd <- system("tail -5 Anteater_reads/Anteater.proc10xG", intern=TRUE)
+res <- strsplit(dd, " ")
+```
+
+Post processing read length are R1 = 127bp, R2 = 150bp, `r formatC(res[[3]][2])` perfect match and `r formatC(res[[4]][2])` single mismatch reads gives `r formatC(as.numeric(res[[3]][2]) + as.numeric(res[[4]][2]), format="d", big.mark=",")` and `r formatC(((as.numeric(res[[3]][2]) + as.numeric(res[[4]][2]))*(127+150)), format="e", digits=3)` bp.
+
+```{r barcodes, include=FALSE, echo=FALSE, error=FALSE, warning=FALSE}
+# Reads in dataset
+reads = as.numeric(res[[3]][2]) + as.numeric(res[[4]][2])
+# Bp in dataset
+bp = reads*(127+150)
+barcodes <- read.table("Anteater_reads/Anteater_reads_barcodes.txt")
+```
+
+### Gem Barcode profile 
+```{r barcode_plot, echo=FALSE, error=FALSE, warning=FALSE}
+p <- ggplot(barcodes, aes(x=V2))
+p <- p + geom_histogram(aes(x=V2, y=..count..), stat='count') + coord_cartesian(xlim=c(0,1000),ylim=c(0,5000))
+p <- p + scale_x_discrete(limits=seq.int(0,1000,by=50))
+p <- p + xlab("Number of Reads") + ylab("Barcode Count")
+p <- p + theme(
+   panel.background = element_rect(fill = "grey99",
+                                 colour = "grey99",
+                                 size = 0.5, linetype = "solid"),
+   panel.grid.minor = element_blank(), 
+   panel.grid.major = element_line(color = "gray75", size = 0.5),
+   panel.grid.major.x = element_blank())
+p <- ggplotly(p)
+p
+```
+
+
+## Kmer spectra with KAT at k = 21,27,33
+
+In de novo genome projects, analyzing the k-mer frequency, which is independent of genome
+assembly, is widely used as an alternative way to profile repeat structure and estimate the genome size.
+
+```{r load_kat, include=FALSE, echo=FALSE, error=FALSE, warning=FALSE}
+spec1_21 <- read.table("Anteater_reads/Anteater_reads-k21")
+spec1_21$k21 <- spec1_21[,2]/sum(spec1_21[,2])*100
+spec1_27 <- read.table("Anteater_reads/Anteater_reads-k27")
+spec1_27$k27 <- spec1_27[,2]/sum(spec1_27[,2])*100
+spec1_33 <- read.table("Anteater_reads/Anteater_reads-k33")
+spec1_33$k33 <- spec1_33[,2]/sum(spec1_33[,2])*100
+```
+
+### Kmer histogram plots (k=21,27,33)
+
+```{r kmer_plot, echo=FALSE, error=FALSE, warning=FALSE}
+spec1 <- spec1_21[,c("V1","k21")]
+colnames(spec1) <- c("freq","k21")
+spec1$k27 <- spec1_27[,"k27"]
+spec1$k33 <- spec1_33[,"k33"]
+
+spec <- melt(spec1,id="freq")
+
+p <- ggplot(spec, aes(x=freq, y=value, by=variable, color=variable))
+p <- p + geom_line() + coord_cartesian(xlim=c(0,150),ylim=c(0,0.7))
+p <- p + scale_x_discrete(name ="Frequency", limits=seq.int(0,150,by=10))
+p <- p + xlab("Frequency") + ylab("Percent in total (%)") + labs(color = "kmer")
+p <- p + theme(
+  panel.background = element_rect(fill = "grey99",
+                                colour = "grey99",
+                                size = 0.5, linetype = "solid"),
+  panel.grid.minor = element_blank(), 
+  panel.grid.major = element_line(color = "gray75", size = 0.5),
+  panel.grid.major.x = element_blank())
+p <- ggplotly(p)
+p
+```
+
+### Genomic estimates table
+
+```{r genomic_estimates, echo=FALSE, error=FALSE, warning=FALSE}
+## total number of non-error kmers
+## Error trough at 9
+computerGS <- function(stable, error, peak, singlecopy, bp){
+  # genome size estimate
+  g_est = round(sum(as.numeric(stable[error:10000,1]*stable[error:10000,2]))/peak, digits=0)
+
+  # Single copy sum
+  singleC <- round(sum(as.numeric(stable[error:singlecopy,1]*stable[error:singlecopy,2]))/peak, digits=0)
+
+  # % in single copy
+  psinglecopy <- round(singleC/g_est, digits=2)
+  cov <- round(bp/g_est, digits=2)
+  return(list("Error trough value"=error, "Peak value"=peak, "Max singlecopy value"=singlecopy, "Genome size estimate"=format(g_est, big.mark = ","), "Single copy size estimate"=format(singleC, big.mark=","), singlecopy_proportion=psinglecopy, "Coverage estimate"=cov))
+}
+
+k21_ge <- computerGS(spec1_21, 16, 59, 120, bp)
+k27_ge <- computerGS(spec1_27, 14, 55, 120, bp)
+k33_ge <- computerGS(spec1_33, 12, 52, 120, bp)
+
+ge <- cbind(k21_ge, k27_ge, k33_ge)
+ge %>% 
+  kable(caption="Genome size estimates for K = 21, 27, 33", 
+        col.names = c("k21","k27","k33"), row.names = T,
+        align = "lrrr",
+        format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
+  kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T)
+```
+
+### Kmer table for the first 60 k frequency values.
+The table is used to determine error trough, peak, and max values for plot/data above.
+```{r draw_table, echo=FALSE, error=FALSE, warning=FALSE}
+kt <- data.frame(spec1_21,spec1_27[,-1],spec1_33[,-1])
+kt[1:70,] %>% 
+  kable(caption="Kmer tables: First 60 frequency values for K = 21, 27, 33",
+        col.names = c("Frequency", rep(c("count", "proportion"),times=3)),
+        digits=2, align = "lrrrrrr",
+        format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
+  kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T) %>%
+  add_header_above(c(" " = 1, "k21" = 2, "k27" = 2, "k33" = 2))
+```
+
