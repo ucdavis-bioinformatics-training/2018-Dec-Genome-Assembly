@@ -29,11 +29,7 @@ title: Genome Assembly Workshop - December 17 - 20, 2018
 * [10X Assembly - Matt Settles](10x-supernova/10x-supernova.md)
 
 
-### TBD
-
-* [More Assembly Integration - Jie Li, Joe Fass]()
-
 Evaluation
 ----------
 
-[Evaluation]()
+[Evaluation](https://docs.google.com/forms/d/e/1FAIpQLSc8GUmS4KE4nZuVfgZmTQPBPwGNSln1T1N49KJ6rtIU9AHwNw/viewform?usp=sf_link)
